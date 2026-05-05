@@ -13,7 +13,7 @@ The commands assume this repository is checked out as `fantasy-pi`.
 
 ## Quickly Build a Game
 First, create a game. A manual with opcodes can be found in fantasy-pi\docs\guide.html<br>
-Copy the source files and the assets to fantasy-pi\input_asm\<br>
+Copy the source files and the assets to fantasy-pi\input_asm\ <br>
 <br>
 cd fantasy-pi<br>
 .\build.bat<br>
