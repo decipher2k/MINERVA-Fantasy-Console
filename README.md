@@ -11,6 +11,13 @@ This document describes how to build MINERVA on Windows, Linux, and macOS:
 
 The commands assume this repository is checked out as `fantasy-pi`.
 
+## Quickly Build a Game
+First, create a game. A manual with opcodes can be found in fantasy-pi\docs\guide.html
+Copy the source files and the assets to fantasy-pi\input_asm\
+
+cd fantasy-pi
+.\build.bat
+
 ## Tool Links
 
 Use official package managers where possible. These links are stable entry points rather than version-pinned download files.
