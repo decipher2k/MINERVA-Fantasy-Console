@@ -1,0 +1,10 @@
+C:/Users/denni/console/fantasy-pi/CMakeFiles/fantasy_vm_host.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/fantasy_renderer_host.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/fantasy_emulator.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/test_vm.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/test_renderer.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/test_blit.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/test_assembler.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/test.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/edit_cache.dir
+C:/Users/denni/console/fantasy-pi/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,60 @@
+; ============================================================
+; bitblt_demo/src/main.fasm - Stress test for BitBlt
+; ============================================================
+
+.section assets
+.asset particle, "assets/particle.png", type=sprite, format=rgba8888, alpha=premultiplied
+
+.section code
+
+start:
+    load r0, #640
+    load r1, #480
+    trap GFX_INIT
+
+    load r8, #0          ; frame counter
+
+demo_loop:
+    load r0, #0xFF000000
+    trap GFX_CLEAR
+
+    ; Draw 100 particles
+    load r4, #0          ; i = 0
+draw_particles:
+    cmp r4, #100
+    jge end_particles
+
+    ; x = (i * 37 + frame) % 640
+    load r0, r4
+    load r1, #37
+    trap MATH_MUL
+    add r0, r0, r8
+    load r1, #640
+    trap MOD
+    load r5, r0        ; x
+
+    ; y = (i * 53 + frame * 2) % 480
+    load r0, r4
+    load r1, #53
+    trap MATH_MUL
+    load r1, r8
+    shl r1, r1, #1
+    add r0, r0, r1
+    load r1, #480
+    trap MOD
+    load r6, r0        ; y
+
+    ; Draw sprite
+    load r0, particle
+    load r1, r5
+    load r2, r6
+    load r3, #BLEND_ADDITIVE
+    trap GFX_DRAW_SPRITE
+
+    add r4, r4, #1
+    jmp draw_particles
+
+end_particles:
+    trap GFX_PRESENT
+    add r8, r8, #1
+    jmp demo_loop

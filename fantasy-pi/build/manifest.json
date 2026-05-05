@@ -1,0 +1,48 @@
+{
+  "assets": [
+    {
+      "name": "bg_main",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/background.png",
+      "type": "image",
+      "format": "rgb565",
+      "alpha": "none"
+    },
+    {
+      "name": "player",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/player.png",
+      "type": "sprite",
+      "format": "rgba8888",
+      "alpha": "premultiplied"
+    },
+    {
+      "name": "shadow",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/shadow.png",
+      "type": "sprite",
+      "format": "rgba4444",
+      "alpha": "premultiplied"
+    },
+    {
+      "name": "sfx_jump",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/jump.wav",
+      "type": "audio",
+      "format": "pcm16",
+      "alpha": "straight"
+    },
+    {
+      "name": "tiles_ground",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/tiles.png",
+      "type": "tileset",
+      "format": "rgba8888",
+      "alpha": "straight",
+      "tilew": 16,
+      "tileh": 16
+    },
+    {
+      "name": "map_level1",
+      "source": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\../assets/level1.json",
+      "type": "tilemap",
+      "format": "rgba8888",
+      "alpha": "straight"
+    }
+  ]
+}

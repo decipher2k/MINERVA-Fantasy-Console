@@ -1,0 +1,73 @@
+; ============================================================
+; hello_world/src/main.fasm - Minimal working example (no assets)
+; ============================================================
+; This example clears the screen with cycling colors.
+; It requires no external image or audio assets.
+; ============================================================
+
+.section data
+
+color_red:    .word 0xFFFF0000
+color_green:  .word 0xFF00FF00
+color_blue:   .word 0xFF0000FF
+color_white:  .word 0xFFFFFFFF
+
+.section code
+
+start:
+    load r0, #640
+    load r1, #480
+    trap GFX_INIT
+
+    load r4, #0          ; color index (0=red, 1=green, 2=blue, 3=white)
+
+main_loop:
+    ; Load color address based on index
+    load r0, color_red
+    add r0, r0, r4
+    shl r0, r0, #2       ; multiply index by 4 (sizeof word)
+    ; Actually simpler: just load from base + offset
+    ; But our ld doesn't support scaled index easily.
+    ; Let's just use a small immediate table:
+
+    cmp r4, #0
+    jeq draw_red
+    cmp r4, #1
+    jeq draw_green
+    cmp r4, #2
+    jeq draw_blue
+    jmp draw_white
+
+draw_red:
+    load r5, color_red
+    jmp do_clear
+
+draw_green:
+    load r5, color_green
+    jmp do_clear
+
+draw_blue:
+    load r5, color_blue
+    jmp do_clear
+
+draw_white:
+    load r5, color_white
+
+do_clear:
+    ld r0, [r5, #0]
+    trap GFX_CLEAR
+
+    trap GFX_PRESENT
+
+    ; Cycle color index
+    add r4, r4, #1
+    cmp r4, #4
+    jlt skip_reset
+    load r4, #0
+skip_reset:
+
+    ; Slow down via sleep trap (16ms ~ 60 FPS)
+    load r0, #16
+    trap TRAP_SLEEP
+
+    jmp main_loop

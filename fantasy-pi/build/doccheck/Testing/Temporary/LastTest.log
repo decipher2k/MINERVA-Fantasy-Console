@@ -1,0 +1,86 @@
+Start testing: May 05 12:18 Mitteleuropäische Sommerzeit
+----------------------------------------------------------
+1/4 Testing: VMTest
+1/4 Test: VMTest
+Command: "C:/Users/denni/console/fantasy-pi/build/doccheck/test_vm.exe"
+Directory: C:/Users/denni/console/fantasy-pi/build/doccheck
+"VMTest" start time: May 05 12:18 Mitteleuropäische Sommerzeit
+Output:
+----------------------------------------------------------
+Running VM tests...
+test_load_store PASSED
+test_load_register_encoding PASSED
+test_arithmetic PASSED
+test_immediate_arithmetic_and_cmp PASSED
+test_trap_halt PASSED
+test_trap_callback PASSED
+All VM tests passed!
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"VMTest" end time: May 05 12:18 Mitteleuropäische Sommerzeit
+"VMTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/4 Testing: RendererTest
+2/4 Test: RendererTest
+Command: "C:/Users/denni/console/fantasy-pi/build/doccheck/test_renderer.exe"
+Directory: C:/Users/denni/console/fantasy-pi/build/doccheck
+"RendererTest" start time: May 05 12:18 Mitteleuropäische Sommerzeit
+Output:
+----------------------------------------------------------
+Running Renderer tests...
+test_init_clear PASSED
+test_blit_copy PASSED
+test_blit_alpha PASSED (result=0xFF80007F)
+test_clip_rect PASSED
+All Renderer tests passed!
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"RendererTest" end time: May 05 12:18 Mitteleuropäische Sommerzeit
+"RendererTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/4 Testing: BlitTest
+3/4 Test: BlitTest
+Command: "C:/Users/denni/console/fantasy-pi/build/doccheck/test_blit.exe"
+Directory: C:/Users/denni/console/fantasy-pi/build/doccheck
+"BlitTest" start time: May 05 12:18 Mitteleuropäische Sommerzeit
+Output:
+----------------------------------------------------------
+Running Blit tests...
+test_colorkey PASSED
+test_additive_blend PASSED (r=C0)
+test_flip_x PASSED
+test_global_alpha PASSED (r=FF g=7F)
+All Blit tests passed!
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"BlitTest" end time: May 05 12:18 Mitteleuropäische Sommerzeit
+"BlitTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/4 Testing: AssemblerTest
+4/4 Test: AssemblerTest
+Command: "C:/Users/denni/console/fantasy-pi/build/doccheck/test_assembler.exe"
+Directory: C:/Users/denni/console/fantasy-pi/build/doccheck
+"AssemblerTest" start time: May 05 12:18 Mitteleuropäische Sommerzeit
+Output:
+----------------------------------------------------------
+Running Assembler integration tests...
+test_assembler_integration PASSED (ROM header + code verified)
+All Assembler tests passed!
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"AssemblerTest" end time: May 05 12:18 Mitteleuropäische Sommerzeit
+"AssemblerTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 05 12:18 Mitteleuropäische Sommerzeit

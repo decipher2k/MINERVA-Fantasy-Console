@@ -1,0 +1,3 @@
+# This is a placeholder for a 640x480 background image.
+# Replace with a real PNG file.
+# For testing, create a simple gradient in GIMP or Paint.NET and export as PNG.

@@ -1,0 +1,24 @@
+# ninja log v7
+41	197	7996791120167040	CMakeFiles/test_assembler.dir/C_/Users/denni/console/fantasy-pi/tests/assembler/test_assembler.cpp.obj	4d76f4f09d684dfe
+29	225	7996791120052573	CMakeFiles/test_renderer.dir/C_/Users/denni/console/fantasy-pi/tests/renderer/test_renderer.cpp.obj	cc967ee649246c39
+24	229	7996791120002913	CMakeFiles/test_vm.dir/C_/Users/denni/console/fantasy-pi/tests/vm/test_vm.cpp.obj	eefc4390ca2a47b3
+35	233	7996791120106759	CMakeFiles/test_blit.dir/C_/Users/denni/console/fantasy-pi/tests/renderer/test_blit.cpp.obj	c7599895bbc02e4b
+8	268	7996791119840224	CMakeFiles/fantasy_vm_host.dir/C_/Users/denni/console/fantasy-pi/vm/src/fantasy_vm.cpp.obj	f97da73044e1fb12
+19	328	7996791119947303	CMakeFiles/fantasy_renderer_host.dir/C_/Users/denni/console/fantasy-pi/renderer/src/audio_mixer.cpp.obj	f404650dfc8b4239
+269	338	7996791122449743	libfantasy_vm_host.a	5d10049ef362da91
+200	378	7996791121761990	test_assembler.exe	8690b10b36d2582d
+13	463	7996791119885918	CMakeFiles/fantasy_renderer_host.dir/C_/Users/denni/console/fantasy-pi/renderer/src/renderer.cpp.obj	3cb91fb89c3da407
+338	516	7996791123134282	test_vm.exe	9f04ae541e91b08b
+463	537	7996791124392193	libfantasy_renderer_host.a	817bc0e5d666da1
+537	697	7996791125129191	test_renderer.exe	9f10a8c564037962
+545	703	7996791125212038	test_blit.exe	c6a5563035e0da35
+20	160	7996791586416250	CMakeFiles/test_blit.dir/C_/Users/denni/console/fantasy-pi/tests/renderer/test_blit.cpp.obj	c7599895bbc02e4b
+160	333	7996791587819019	test_blit.exe	c6a5563035e0da35
+19	156	7996791747261984	CMakeFiles/test_blit.dir/C_/Users/denni/console/fantasy-pi/tests/renderer/test_blit.cpp.obj	c7599895bbc02e4b
+157	323	7996791748642273	test_blit.exe	c6a5563035e0da35
+23	363	7996791985440158	CMakeFiles/fantasy_renderer_host.dir/C_/Users/denni/console/fantasy-pi/renderer/src/renderer.cpp.obj	3cb91fb89c3da407
+363	436	7996791988846401	libfantasy_renderer_host.a	817bc0e5d666da1
+436	616	7996791989566653	test_renderer.exe	9f10a8c564037962
+445	629	7996791989653820	test_blit.exe	c6a5563035e0da35
+21	156	7996792197771089	CMakeFiles/test_renderer.dir/C_/Users/denni/console/fantasy-pi/tests/renderer/test_renderer.cpp.obj	cc967ee649246c39
+157	332	7996792199128311	test_renderer.exe	9f10a8c564037962

@@ -1,0 +1,54 @@
+; ============================================================
+; sprite_demo/src/main.fasm - Alpha blending demonstration
+; ============================================================
+
+.section assets
+.asset glass, "assets/glass.png", type=sprite, format=rgba8888, alpha=premultiplied
+.asset fire, "assets/fire.png", type=sprite, format=rgba8888, alpha=premultiplied, blend=additive
+
+.section code
+
+start:
+    load r0, #640
+    load r1, #480
+    trap GFX_INIT
+
+    load r4, #0          ; angle
+
+demo_loop:
+    load r0, #0xFF202040
+    trap GFX_CLEAR
+
+    ; Draw glass sprite with sine wave movement
+    load r0, r4
+    trap MATH_SIN
+    load r1, #200
+    trap MATH_MUL
+    load r1, #320
+    add r5, r1, r0       ; x = 320 + sin(angle)*200
+
+    load r0, r4
+    trap MATH_COS
+    load r1, #150
+    trap MATH_MUL
+    load r1, #240
+    add r6, r1, r0       ; y = 240 + cos(angle)*150
+
+    ; Draw glass (normal alpha)
+    load r0, glass
+    load r1, r5
+    load r2, r6
+    load r3, #BLEND_ALPHA
+    trap GFX_DRAW_SPRITE
+
+    ; Draw fire (additive) at center
+    load r0, fire
+    load r1, #320
+    load r2, #240
+    load r3, #BLEND_ADDITIVE
+    trap GFX_DRAW_SPRITE
+
+    trap GFX_PRESENT
+
+    add r4, r4, #100     ; increment angle
+    jmp demo_loop

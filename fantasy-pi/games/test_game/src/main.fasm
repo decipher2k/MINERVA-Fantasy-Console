@@ -1,0 +1,287 @@
+; ============================================================
+; test_game/src/main.fasm - Example Fantasy Pi Game
+; ============================================================
+; Demonstrates:
+; - Video init
+; - Asset loading (background, sprites with alpha)
+; - BitBlt and sprite drawing
+; - Input polling
+; - Player movement
+; - Audio playback
+; - Game loop with present
+; ============================================================
+
+; ------------------------------------------------------------
+; Macros
+; ------------------------------------------------------------
+.macro DRAW_SPRITE sprite, x, y, blend
+    load r0, \sprite
+    load r1, \x
+    load r2, \y
+    load r3, \blend
+    trap GFX_DRAW_SPRITE
+.endmacro
+
+.macro BITBLT src, x, y, sx, sy, w, h, blend
+    load r0, \src
+    load r1, \x
+    load r2, \y
+    load r3, \sx
+    load r4, \sy
+    load r5, \w
+    load r6, \h
+    load r7, \blend
+    trap GFX_BITBLT
+.endmacro
+
+.macro DRAW_IMAGE img, x, y, blend
+    load r0, \img
+    load r1, \x
+    load r2, \y
+    load r3, \blend
+    trap GFX_DRAW_IMAGE
+.endmacro
+
+; ------------------------------------------------------------
+; Assets
+; ------------------------------------------------------------
+.section assets
+
+.asset bg_main, "../assets/background.png", type=image, format=rgb565, alpha=none
+.asset player, "../assets/player.png", type=sprite, format=rgba8888, alpha=premultiplied
+.asset shadow, "../assets/shadow.png", type=sprite, format=rgba4444, alpha=premultiplied
+.asset sfx_jump, "../assets/jump.wav", type=audio, format=pcm16
+.asset tiles_ground, "../assets/tiles.png", type=tileset, tilew=16, tileh=16, format=rgba8888
+.asset map_level1, "../assets/level1.json", type=tilemap
+
+; ------------------------------------------------------------
+; Variables (in RAM)
+; ------------------------------------------------------------
+.section data
+
+sky_color:     .word 0xFF87CEEB
+player_x:      .word 320
+player_y:      .word 240
+player_vx:     .word 0
+player_vy:     .word 0
+player_ground: .word 0
+input_state:   .word 0
+frame_count:   .word 0
+
+; ------------------------------------------------------------
+; Code
+; ------------------------------------------------------------
+.section code
+
+start:
+    ; Initialize stack
+    load sp, #0x000FFFFC
+
+    ; Initialize video (640x480)
+    load r0, #640
+    load r1, #480
+    trap GFX_INIT
+
+    ; Initialize audio
+    trap AUDIO_INIT
+
+    ; Load palettes and register assets with renderer
+    ; (In real implementation, kernel loader does this)
+    load r0, bg_main
+    trap GFX_DRAW_IMAGE
+
+    jmp main_loop
+
+main_loop:
+    call read_input
+    call update_player
+    call draw_frame
+    trap GFX_PRESENT
+
+    ; Frame counter
+    load r0, frame_count
+    ld r1, [r0, #0]
+    add r1, r1, #1
+    st r1, [r0, #0]
+
+    jmp main_loop
+
+; ------------------------------------------------------------
+; Input handling
+; ------------------------------------------------------------
+read_input:
+    push lr
+    trap INPUT_POLL
+
+    ; Read keyboard / gamepad into input_state
+    load r0, #0          ; Player 0
+    trap INPUT_GAMEPAD
+
+    ; r0 now contains gamepad state bits:
+    ; bit 0: up, 1: down, 2: left, 3: right, 4: A, 5: B
+
+    load r1, input_state
+    st r0, [r1, #0]
+
+    pop lr
+    ret
+
+; ------------------------------------------------------------
+; Player physics
+; ------------------------------------------------------------
+update_player:
+    push lr
+    push r4
+
+    load r4, input_state
+    ld r4, [r4, #0]
+
+    ; Horizontal movement
+    load r0, player_vx
+    ld r1, [r0, #0]
+
+    ; Left
+    load r2, #0
+    and r3, r4, #4
+    cmp r3, #0
+    jeq check_right
+    load r2, #-2
+
+check_right:
+    and r3, r4, #8
+    cmp r3, #0
+    jeq apply_vx
+    load r2, #2
+
+apply_vx:
+    add r1, r1, r2
+
+    ; Friction / clamp
+    cmp r1, #8
+    jgt clamp_vx_pos
+    cmp r1, #-8
+    jlt clamp_vx_neg
+    jmp apply_pos
+
+clamp_vx_pos:
+    load r1, #8
+    jmp apply_pos
+
+clamp_vx_neg:
+    load r1, #-8
+
+apply_pos:
+    st r1, [r0, #0]
+
+    load r3, player_x
+    ld r2, [r3, #0]
+    add r2, r2, r1
+    st r2, [r3, #0]
+
+    ; Simple gravity
+    load r0, player_y
+    ld r1, [r0, #0]
+    load r3, player_vy
+    ld r2, [r3, #0]
+    add r2, r2, #1       ; gravity
+    cmp r2, #8
+    jgt clamp_vy
+    jmp apply_gravity
+
+clamp_vy:
+    load r2, #8
+
+apply_gravity:
+    st r2, [r3, #0]
+    add r1, r1, r2
+
+    ; Ground collision (y=400)
+    cmp r1, #400
+    jlt store_y
+    load r1, #400
+    load r2, #0
+    st r2, [r3, #0]
+    load r2, player_ground
+    load r3, #1
+    st r3, [r2, #0]
+
+store_y:
+    st r1, [r0, #0]
+
+    ; Jump
+    load r0, player_ground
+    ld r1, [r0, #0]
+    cmp r1, #0
+    jeq no_jump
+
+    load r4, input_state
+    ld r4, [r4, #0]
+    and r4, r4, #16      ; A button
+    cmp r4, #0
+    jeq no_jump
+
+    ; Jump!
+    load r0, player_vy
+    load r1, #-12
+    st r1, [r0, #0]
+    load r0, player_ground
+    load r1, #0
+    st r1, [r0, #0]
+
+    ; Play jump sound
+    load r0, sfx_jump
+    load r1, #0
+    load r2, #128
+    trap AUDIO_PLAY
+
+no_jump:
+    pop r4
+    pop lr
+    ret
+
+; ------------------------------------------------------------
+; Rendering
+; ------------------------------------------------------------
+draw_frame:
+    push lr
+
+    ; Clear with sky color
+    load r0, sky_color
+    ld r0, [r0, #0]
+    trap GFX_CLEAR
+
+    ; Draw background (tilemap or image)
+    load r0, bg_main
+    load r1, #0
+    load r2, #0
+    load r3, #BLEND_COPY
+    trap GFX_DRAW_IMAGE
+
+    ; Draw tilemap
+    load r0, map_level1
+    load r1, #0
+    load r2, #0
+    trap GFX_DRAW_TILEMAP
+
+    ; Draw shadow under player (alpha blended)
+    load r0, shadow
+    load r1, player_x
+    ld r1, [r1, #0]
+    sub r1, r1, #8
+    load r2, player_y
+    ld r2, [r2, #0]
+    add r2, r2, #8
+    load r3, #BLEND_ALPHA
+    trap GFX_DRAW_SPRITE
+
+    ; Draw player (alpha blended sprite)
+    load r0, player
+    load r1, player_x
+    ld r1, [r1, #0]
+    load r2, player_y
+    ld r2, [r2, #0]
+    load r3, #BLEND_ALPHA
+    trap GFX_DRAW_SPRITE
+
+    pop lr
+    ret

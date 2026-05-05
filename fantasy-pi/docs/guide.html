@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Fantasy Pi Console — Complete ISA, Trap, and C++ API Reference" />
+<title>Fantasy Pi Console — Complete Reference</title>
+<style>
+  :root {
+    --bg: #070A13;
+    --bg-elevated: #0B1020;
+    --bg-panel: #111827;
+    --bg-card: #0F1525;
+    --border: rgba(0,212,255,0.12);
+    --border-strong: rgba(0,212,255,0.25);
+    --text: #C8D4E8;
+    --text-muted: #8895A8;
+    --heading: #EAF2FF;
+    --accent-cyan: #00D4FF;
+    --accent-purple: #8B5CF6;
+    --accent-pink: #A855F7;
+    --accent-glow: rgba(0,212,255,0.35);
+    --accent-glow-purple: rgba(139,92,246,0.35);
+    --font-body: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent-cyan); text-decoration: none; transition: color .15s; }
+  a:hover { color: var(--accent-pink); text-shadow: 0 0 8px var(--accent-glow); }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 1.5rem 4rem;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139,92,246,0.15), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(0,212,255,0.08), transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0 0 .6rem;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 18px rgba(0,212,255,0.35), 0 0 40px rgba(139,92,246,0.2);
+  }
+  .hero p { font-size: clamp(1rem, 2.2vw, 1.15rem); color: var(--text-muted); max-width: 720px; margin: 0 auto; }
+  .hero .badge {
+    display: inline-block; margin-top: 1.2rem; padding: .35rem .9rem; border-radius: 999px;
+    border: 1px solid var(--border-strong); background: rgba(0,212,255,0.06);
+    color: var(--accent-cyan); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
+  }
+
+  .nav-bar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(7,10,19,0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: .7rem 1.5rem; }
+  .nav-brand { font-weight: 700; color: var(--heading); letter-spacing: .04em; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; }
+  .nav-links a { font-size: .9rem; font-weight: 500; color: var(--text-muted); }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-cyan); text-shadow: 0 0 8px var(--accent-glow); }
+  .mobile-toggle { display: none; background: none; border: 1px solid var(--border); color: var(--text); padding: .3rem .6rem; border-radius: 6px; cursor: pointer; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 6rem; display: grid; grid-template-columns: 240px 1fr; gap: 2.5rem; align-items: start; }
+
+  .sidebar { position: sticky; top: 70px; }
+  .sidebar h3 { font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-muted); margin: 1.2rem 0 .5rem; }
+  .sidebar h3:first-child { margin-top: 0; }
+  .sidebar ul { list-style: none; margin: 0; padding: 0; }
+  .sidebar li + li { margin-top: .1rem; }
+  .sidebar a { display: block; padding: .3rem .5rem; border-radius: 6px; font-size: .84rem; color: var(--text-muted); border-left: 2px solid transparent; }
+  .sidebar a:hover { background: rgba(0,212,255,0.06); color: var(--accent-cyan); }
+  .sidebar a.active { color: var(--accent-cyan); border-left-color: var(--accent-cyan); background: rgba(0,212,255,0.06); }
+
+  main { min-width: 0; }
+
+  .section {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 2rem 2.2rem; margin-bottom: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    position: relative; overflow: hidden;
+  }
+  .section::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), transparent); opacity: .5;
+  }
+
+  .section h2 { font-size: clamp(1.4rem, 3vw, 1.7rem); color: var(--heading); margin: 0 0 .2rem; display: flex; align-items: center; gap: .6rem; }
+  .section h2 .icon { width: 32px; height: 32px; border-radius: 8px; display: inline-grid; place-items: center; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: #fff; font-size: .9rem; font-weight: 700; box-shadow: 0 0 12px var(--accent-glow); }
+  .section .lead { color: var(--text-muted); font-size: 1.05rem; margin: .4rem 0 1.2rem; }
+
+  h3 { color: var(--heading); margin: 1.8rem 0 .6rem; font-size: 1.15rem; }
+  h4 { color: var(--text); margin: 1.2rem 0 .4rem; font-size: 1rem; }
+  p { margin: .6rem 0; }
+
+  .anchor { scroll-margin-top: 80px; }
+
+  ul.feature-list { list-style: none; padding: 0; margin: .6rem 0; }
+  ul.feature-list li { position: relative; padding-left: 1.4rem; margin: .35rem 0; }
+  ul.feature-list li::before { content: '>'; position: absolute; left: 0; color: var(--accent-cyan); font-weight: 700; text-shadow: 0 0 6px var(--accent-glow); }
+
+  pre {
+    background: #0A0E1A; border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.2rem; overflow-x: auto; font-family: var(--font-mono); font-size: .85rem;
+    line-height: 1.55; color: #B8C8E0; position: relative;
+  }
+  pre .copy-btn { position: absolute; top: .5rem; right: .5rem; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text-muted); font-size: .72rem; padding: .25rem .55rem; border-radius: 6px; cursor: pointer; font-family: var(--font-body); }
+  pre .copy-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+  code { font-family: var(--font-mono); font-size: .9em; }
+  code.inline { background: rgba(0,212,255,0.08); padding: .15rem .4rem; border-radius: 5px; color: var(--accent-cyan); }
+
+  .tok-k { color: #C084FC; } .tok-f { color: #60A5FA; } .tok-s { color: #34D399; }
+  .tok-c { color: #6B7280; font-style: italic; } .tok-n { color: #F472B6; } .tok-d { color: #FBBF24; }
+  .tok-r { color: #F87171; } .tok-m { color: #38BDF8; }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+
+  .tile {
+    background: linear-gradient(180deg, rgba(17,24,39,0.9), rgba(11,16,32,0.95));
+    border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .tile:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: 0 8px 24px rgba(0,212,255,0.08); }
+  .tile h4 { margin: 0 0 .3rem; color: var(--heading); }
+  .tile p { margin: 0; font-size: .92rem; color: var(--text-muted); }
+
+  .info { background: rgba(0,212,255,0.06); border-left: 3px solid var(--accent-cyan); padding: .8rem 1rem; border-radius: 0 10px 10px 0; margin: 1rem 0; }
+  .info.purple { background: rgba(139,92,246,0.06); border-left-color: var(--accent-purple); }
+  .info strong { color: var(--heading); }
+  .info.warn { background: rgba(251,191,36,0.06); border-left-color: #FBBF24; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .88rem; }
+  th, td { padding: .55rem .7rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--heading); font-weight: 600; background: rgba(0,212,255,0.04); font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+  tr:hover td { background: rgba(0,212,255,0.03); }
+  td code { font-size: .9em; }
+
+  .op-table td:first-child { font-family: var(--font-mono); color: var(--accent-cyan); font-weight: 600; }
+  .op-table td:nth-child(2) { font-family: var(--font-mono); color: var(--accent-pink); }
+
+  .trap-table td:first-child { font-family: var(--font-mono); color: var(--accent-cyan); }
+  .trap-table td:nth-child(2) { font-family: var(--font-mono); color: #F472B6; }
+
+  .api-table td:first-child { font-family: var(--font-mono); color: var(--accent-cyan); }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 1rem 0; }
+  .steps li { position: relative; padding-left: 2.6rem; margin: 0 0 1rem; }
+  .steps li::before {
+    counter-increment: step; content: counter(step); position: absolute; left: 0; top: .1rem;
+    width: 1.7rem; height: 1.7rem; border-radius: 50%; display: inline-grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    color: #fff; font-weight: 700; font-size: .8rem; box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .file-tree {
+    font-family: var(--font-mono); font-size: .85rem; background: #0A0E1A;
+    border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem;
+    line-height: 1.6; color: var(--text-muted);
+  }
+  .file-tree .dir { color: var(--accent-cyan); }
+  .file-tree .file { color: var(--text); }
+  .file-tree .comment { color: #6B7280; }
+
+  .bit-layout {
+    font-family: var(--font-mono); font-size: .8rem;
+    display: flex; gap: 2px; margin: .8rem 0; flex-wrap: wrap;
+  }
+  .bit-field {
+    background: rgba(0,212,255,0.08); border: 1px solid var(--border);
+    padding: .3rem .5rem; border-radius: 4px; text-align: center; min-width: 50px;
+  }
+  .bit-field.op { background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.3); }
+  .bit-field.cond { background: rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.3); }
+  .bit-field.dst { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.3); }
+  .bit-field.src { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); }
+  .bit-field.imm { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); }
+
+  footer { border-top: 1px solid var(--border); background: var(--bg-elevated); text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); font-size: .9rem; }
+
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .nav-links { display: none; position: absolute; top: 100%; right: 0; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: .5rem; min-width: 180px; }
+    .nav-links.open { display: flex; flex-direction: column; gap: .2rem; }
+    .mobile-toggle { display: inline-block; }
+    .hero { padding: 4rem 1rem 3rem; }
+    .section { padding: 1.3rem; }
+  }
+  @media (max-width: 480px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    pre { padding: .8rem; font-size: .78rem; }
+    table { font-size: .8rem; }
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #1f2d47; border-radius: 999px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: #2a3d5c; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge">Complete Technical Reference</div>
+  <h1>Fantasy Pi Console</h1>
+  <p>Full ISA, System Trap, and C++ SDK reference for the Fantasy Pi virtual console platform.</p>
+</header>
+
+<nav class="nav-bar" aria-label="Primary">
+  <div class="nav-inner">
+    <div class="nav-brand">FPi REF</div>
+    <button class="mobile-toggle" id="menuBtn" aria-label="Toggle menu">Menu</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#isa">ISA</a></li>
+      <li><a href="#traps">Traps</a></li>
+      <li><a href="#memory">Memory</a></li>
+      <li><a href="#cpp-api">C++ API</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <aside class="sidebar" aria-label="Section navigation">
+    <h3>Architecture</h3>
+    <ul>
+      <li><a href="#isa">Instruction Set</a></li>
+      <li><a href="#isa-format">Instruction Format</a></li>
+      <li><a href="#isa-conds">Condition Codes</a></li>
+      <li><a href="#isa-alu">ALU Opcodes</a></li>
+      <li><a href="#isa-mem">Memory Opcodes</a></li>
+      <li><a href="#isa-ctrl">Control Flow</a></li>
+      <li><a href="#isa-trap">Trap Opcode</a></li>
+    </ul>
+    <h3>System</h3>
+    <ul>
+      <li><a href="#traps">Trap Reference</a></li>
+      <li><a href="#trap-gfx">GFX Traps</a></li>
+      <li><a href="#trap-audio">Audio Traps</a></li>
+      <li><a href="#trap-input">Input Traps</a></li>
+      <li><a href="#trap-mem">Memory Traps</a></li>
+      <li><a href="#trap-math">Math Traps</a></li>
+      <li><a href="#trap-debug">Debug Traps</a></li>
+    </ul>
+    <h3>Platform</h3>
+    <ul>
+      <li><a href="#memory">Memory Map</a></li>
+      <li><a href="#registers">Registers</a></li>
+      <li><a href="#limits">Hardware Limits</a></li>
+    </ul>
+    <h3>SDK</h3>
+    <ul>
+      <li><a href="#cpp-api">C++ API Overview</a></li>
+      <li><a href="#cpp-gfx">Graphics API</a></li>
+      <li><a href="#cpp-sprite">Sprite &amp; Tilemap</a></li>
+      <li><a href="#cpp-input">Input API</a></li>
+      <li><a href="#cpp-audio">Audio API</a></li>
+      <li><a href="#cpp-go">GameObject API</a></li>
+      <li><a href="#cpp-math">Math &amp; Utils</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+<!-- ========================= ISA ========================= -->
+<section class="section anchor" id="isa">
+  <h2><span class="icon">ISA</span> Instruction Set Architecture</h2>
+  <p class="lead">The Fantasy Pi VM is a 32-bit RISC processor with 16 general-purpose registers, 32 fixed-length instructions, and 4 condition flags.</p>
+
+  <h3 id="isa-format">Instruction Format</h3>
+  <p>Every instruction is exactly 32 bits wide and follows this layout:</p>
+  <div class="bit-layout">
+    <div class="bit-field op">OP<br><small>6b</small></div>
+    <div class="bit-field cond">COND<br><small>4b</small></div>
+    <div class="bit-field dst">DST<br><small>4b</small></div>
+    <div class="bit-field src">SRCA<br><small>4b</small></div>
+    <div class="bit-field src">SRCB<br><small>4b</small></div>
+    <div class="bit-field imm">IMM10<br><small>10b</small></div>
+  </div>
+  <p style="font-size:.9rem;color:var(--text-muted)">
+    <strong>OP</strong> = opcode (6 bits) &nbsp;|&nbsp;
+    <strong>COND</strong> = condition code (4 bits) &nbsp;|&nbsp;
+    <strong>DST</strong> = destination register (4 bits) &nbsp;|&nbsp;
+    <strong>SRCA/SRCB</strong> = source registers (4 bits each) &nbsp;|&nbsp;
+    <strong>IMM10</strong> = 10-bit signed immediate (10 bits)
+  </p>
+  <p>For load and jump instructions the lower 22 bits form a signed 22-bit immediate (IMM22).</p>
+
+  <h3 id="isa-conds">Condition Codes</h3>
+  <p>The upper 4 bits of every instruction are a condition predicate. The instruction only executes if the predicate is true.</p>
+  <table>
+    <thead><tr><th>Code</th><th>Mnemonic</th><th>Meaning</th><th>Flag Test</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">0x0</code></td><td><code class="inline">al</code></td><td>Always</td><td>true</td></tr>
+      <tr><td><code class="inline">0x1</code></td><td><code class="inline">eq</code></td><td>Equal / Zero</td><td>Z set</td></tr>
+      <tr><td><code class="inline">0x2</code></td><td><code class="inline">ne</code></td><td>Not equal</td><td>Z clear</td></tr>
+      <tr><td><code class="inline">0x3</code></td><td><code class="inline">gt</code></td><td>Signed greater than</td><td>Z clear &amp;&amp; N clear</td></tr>
+      <tr><td><code class="inline">0x4</code></td><td><code class="inline">lt</code></td><td>Signed less than</td><td>N set</td></tr>
+      <tr><td><code class="inline">0x5</code></td><td><code class="inline">ge</code></td><td>Signed greater or equal</td><td>N clear</td></tr>
+      <tr><td><code class="inline">0x6</code></td><td><code class="inline">le</code></td><td>Signed less or equal</td><td>Z set || N set</td></tr>
+      <tr><td><code class="inline">0x7</code></td><td><code class="inline">cs</code></td><td>Carry set</td><td>C set</td></tr>
+      <tr><td><code class="inline">0x8</code></td><td><code class="inline">cc</code></td><td>Carry clear</td><td>C clear</td></tr>
+      <tr><td><code class="inline">0x9</code></td><td><code class="inline">mi</code></td><td>Minus / negative</td><td>N set</td></tr>
+      <tr><td><code class="inline">0xA</code></td><td><code class="inline">pl</code></td><td>Plus / positive or zero</td><td>N clear</td></tr>
+      <tr><td><code class="inline">0xB</code></td><td><code class="inline">vs</code></td><td>Overflow set</td><td>V set</td></tr>
+      <tr><td><code class="inline">0xC</code></td><td><code class="inline">vc</code></td><td>Overflow clear</td><td>V clear</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="isa-alu">ALU &amp; Data-Processing Opcodes</h3>
+  <table class="op-table">
+    <thead><tr><th>Opcode</th><th>Mnemonic</th><th>Operation</th><th>Flags</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x00</td><td>nop</td><td>—</td><td>—</td><td>No operation. Advances PC by 4.</td></tr>
+      <tr><td>0x01</td><td>load</td><td><code class="inline">dst = simm22</code></td><td>—</td><td>Load 22-bit signed immediate into destination register.</td></tr>
+      <tr><td>0x02</td><td>mov</td><td><code class="inline">dst = srcA</code></td><td>—</td><td>Copy value from source to destination.</td></tr>
+      <tr><td>0x03</td><td>add</td><td><code class="inline">dst = srcA + srcB</code></td><td>Z N C V</td><td>32-bit unsigned addition with full flag update.</td></tr>
+      <tr><td>0x04</td><td>sub</td><td><code class="inline">dst = srcA - srcB</code></td><td>Z N C V</td><td>32-bit subtraction. Sets flags for signed/unsigned comparisons.</td></tr>
+      <tr><td>0x05</td><td>mul</td><td><code class="inline">dst = srcA * srcB</code></td><td>Z N C V</td><td>32-bit multiply. Lower 32 bits of the 64-bit result are written.</td></tr>
+      <tr><td>0x06</td><td>div</td><td><code class="inline">dst = srcA / srcB</code></td><td>—</td><td>Unsigned division. Division by zero returns 0.</td></tr>
+      <tr><td>0x07</td><td>mod</td><td><code class="inline">dst = srcA % srcB</code></td><td>—</td><td>Unsigned modulo. Modulo by zero returns 0.</td></tr>
+      <tr><td>0x08</td><td>and</td><td><code class="inline">dst = srcA &amp; srcB</code></td><td>Z N</td><td>Bitwise AND.</td></tr>
+      <tr><td>0x09</td><td>or</td><td><code class="inline">dst = srcA | srcB</code></td><td>Z N</td><td>Bitwise OR.</td></tr>
+      <tr><td>0x0A</td><td>xor</td><td><code class="inline">dst = srcA ^ srcB</code></td><td>Z N</td><td>Bitwise XOR.</td></tr>
+      <tr><td>0x0B</td><td>not</td><td><code class="inline">dst = ~srcA</code></td><td>Z N</td><td>Bitwise NOT (complement).</td></tr>
+      <tr><td>0x0C</td><td>shl</td><td><code class="inline">dst = srcA &lt;&lt; (srcB &amp; 31)</code></td><td>Z N C</td><td>Logical shift left. Shift amount is masked to 5 bits.</td></tr>
+      <tr><td>0x0D</td><td>shr</td><td><code class="inline">dst = srcA &gt;&gt; (srcB &amp; 31)</code></td><td>Z N C</td><td>Logical shift right (zero-fill).</td></tr>
+      <tr><td>0x0E</td><td>sar</td><td><code class="inline">dst = (int32_t)srcA &gt;&gt; (srcB &amp; 31)</code></td><td>Z N C</td><td>Arithmetic shift right (sign-extend).</td></tr>
+      <tr><td>0x0F</td><td>cmp</td><td><code class="inline">srcA - srcB</code></td><td>Z N C V</td><td>Compare. Updates flags but does not write a result.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="isa-mem">Memory Opcodes</h3>
+  <table class="op-table">
+    <thead><tr><th>Opcode</th><th>Mnemonic</th><th>Operation</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x10</td><td>ld</td><td><code class="inline">dst = mem32[srcA + simm10]</code></td><td>Load 32-bit word from RAM or ROM mirror. Reads little-endian.</td></tr>
+      <tr><td>0x11</td><td>st</td><td><code class="inline">mem32[srcA + simm10] = srcB</code></td><td>Store 32-bit word to RAM only. Writes little-endian.</td></tr>
+      <tr><td>0x12</td><td>ldb</td><td><code class="inline">dst = mem8[srcA + simm10]</code></td><td>Load unsigned byte from RAM or ROM mirror.</td></tr>
+      <tr><td>0x13</td><td>stb</td><td><code class="inline">mem8[srcA + simm10] = srcB</code></td><td>Store byte to RAM only.</td></tr>
+      <tr><td>0x14</td><td>ldh</td><td><code class="inline">dst = mem16[srcA + simm10]</code></td><td>Load unsigned halfword (16-bit) from RAM or ROM mirror.</td></tr>
+      <tr><td>0x15</td><td>sth</td><td><code class="inline">mem16[srcA + simm10] = srcB</code></td><td>Store halfword to RAM only.</td></tr>
+      <tr><td>0x16</td><td>push</td><td><code class="inline">sp -= 4; mem32[sp] = dst</code></td><td>Push a 32-bit register onto the stack.</td></tr>
+      <tr><td>0x17</td><td>pop</td><td><code class="inline">dst = mem32[sp]; sp += 4</code></td><td>Pop a 32-bit value from the stack into a register.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="isa-ctrl">Control Flow Opcodes</h3>
+  <table class="op-table">
+    <thead><tr><th>Opcode</th><th>Mnemonic</th><th>Operation</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x18</td><td>jmp</td><td><code class="inline">pc = (pc &amp; 0xFFC00000) | imm22</code></td><td>Unconditional jump. Target is 22-bit absolute within the current 4 MB region.</td></tr>
+      <tr><td>0x19</td><td>jeq</td><td><code class="inline">if Z: pc = target</code></td><td>Jump if equal (zero flag set).</td></tr>
+      <tr><td>0x1A</td><td>jne</td><td><code class="inline">if !Z: pc = target</code></td><td>Jump if not equal.</td></tr>
+      <tr><td>0x1B</td><td>jgt</td><td><code class="inline">if !Z &amp;&amp; !N: pc = target</code></td><td>Jump if signed greater than.</td></tr>
+      <tr><td>0x1C</td><td>jlt</td><td><code class="inline">if N: pc = target</code></td><td>Jump if signed less than.</td></tr>
+      <tr><td>0x1D</td><td>call</td><td><code class="inline">lr = pc; pc = target</code></td><td>Call subroutine. Return address stored in LR (R14).</td></tr>
+      <tr><td>0x1E</td><td>ret</td><td><code class="inline">pc = lr</code></td><td>Return from subroutine.</td></tr>
+      <tr><td>0x1F</td><td>trap</td><td><code class="inline">trap(imm10)</code></td><td>System trap. See Trap Reference for all vectors.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Flag Bits</h3>
+  <div class="grid-2">
+    <div class="tile"><h4>Z — Zero</h4><p>Set when the result of an ALU operation is zero.</p></div>
+    <div class="tile"><h4>N — Negative</h4><p>Set when bit 31 of the result is 1 (signed negative).</p></div>
+    <div class="tile"><h4>C — Carry</h4><p>Set on unsigned overflow (carry out of bit 31) or borrow on subtraction.</p></div>
+    <div class="tile"><h4>V — Overflow</h4><p>Set on signed overflow (result sign differs from operands).</p></div>
+  </div>
+
+  <h3>Assembly Example</h3>
+<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code><span class="tok-c">; Set up stack and call main</span>
+<span class="tok-d">.global</span> _start
+_start:
+    <span class="tok-k">load</span>    <span class="tok-r">sp</span>, #<span class="tok-n">0x000FFFFC</span>       <span class="tok-c">; STACK_TOP</span>
+    <span class="tok-k">call</span>    main_init
+
+<span class="tok-c">; Simple loop: sum 0..99 in r0</span>
+sum_loop:
+    <span class="tok-k">load</span>    <span class="tok-r">r0</span>, #<span class="tok-n">0</span>              <span class="tok-c">; accumulator</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r1</span>, #<span class="tok-n">1</span>              <span class="tok-c">; step</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r2</span>, #<span class="tok-n">100</span>            <span class="tok-c">; limit</span>
+.loop:
+    <span class="tok-k">add</span>     <span class="tok-r">r0</span>, <span class="tok-r">r1</span>
+    <span class="tok-k">cmp</span>     <span class="tok-r">r0</span>, <span class="tok-r">r2</span>
+    <span class="tok-k">jlt</span>     .loop
+    <span class="tok-k">ret</span>
+</code></pre>
+</section>
+
+<!-- ========================= TRAPS ========================= -->
+<section class="section anchor" id="traps">
+  <h2><span class="icon">SYS</span> System Trap Reference</h2>
+  <p class="lead">
+    Traps are system calls invoked with the <code class="inline">trap</code> instruction.
+    The trap vector (0–1023) is passed in the lower 10 bits of the instruction.
+    Registers R0–R15 are used for arguments and return values according to the calling convention below.
+  </p>
+
+  <div class="info">
+    <strong>Calling convention</strong> — Arguments are placed in R0, R1, R2 … in order.
+    Return values are written back into R0 (and R1 if two words are returned).
+    The VM always handles <code class="inline">HALT (0x00)</code> internally; all other traps are dispatched to the kernel trap handler.
+  </div>
+
+  <h3 id="trap-gfx">Graphics Traps (0x10 – 0x18)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args (Regs)</th><th>Returns</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x10</td><td>GFX_INIT</td><td>R0=w, R1=h</td><td>—</td><td>Initialize framebuffer. Defaults to 640×480 if args are 0.</td></tr>
+      <tr><td>0x11</td><td>GFX_PRESENT</td><td>—</td><td>—</td><td>Request frame presentation. VM pauses until next frame.</td></tr>
+      <tr><td>0x12</td><td>GFX_CLEAR</td><td>R0=color</td><td>—</td><td>Fill back buffer with 32-bit ARGB color.</td></tr>
+      <tr><td>0x13</td><td>GFX_DRAW_SPRITE</td><td>R0=spriteId, R1=x, R2=y, R3=blendMode</td><td>—</td><td>Draw a registered sprite at (x,y) using the given blend mode.</td></tr>
+      <tr><td>0x14</td><td>GFX_DRAW_IMAGE</td><td>R0=surfId, R1=x, R2=y, R3=blendMode</td><td>—</td><td>Draw a raw surface (image) at (x,y).</td></tr>
+      <tr><td>0x15</td><td>GFX_BITBLT</td><td>R0=srcId, R1=dstX, R2=dstY, R3=srcX, R4=srcY, R5=w, R6=h, R7=mode, R8=globalAlpha</td><td>—</td><td>Blit a rectangle from source surface to framebuffer.</td></tr>
+      <tr><td>0x16</td><td>GFX_DRAW_TILEMAP</td><td>R0=mapId, R1=scrollX, R2=scrollY</td><td>—</td><td>Render a registered tilemap with pixel scrolling.</td></tr>
+      <tr><td>0x17</td><td>GFX_SET_PALETTE</td><td>R0=palId, R1=idx, R2=color</td><td>—</td><td>Write one color into a palette. palId 0–15, idx 0–255.</td></tr>
+      <tr><td>0x18</td><td>GFX_DRAW_TEXT</td><td>R0=fontId, R1=strAddr, R2=(y&lt;&lt;16)|x, R3=color</td><td>—</td><td>Draw a null-terminated string from RAM. Address is relative to RAM base.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Blend Modes</h4>
+  <table>
+    <thead><tr><th>Value</th><th>Name</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>Copy</td><td>Opaque copy, no blending.</td></tr>
+      <tr><td>1</td><td>Alpha</td><td>Standard alpha blend (premultiplied source over destination).</td></tr>
+      <tr><td>2</td><td>ColorKey</td><td>Copy pixels that do not match the transparent color key.</td></tr>
+      <tr><td>3</td><td>Additive</td><td>Add source RGB to destination RGB, clamp to 255.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="trap-audio">Audio Traps (0x20 – 0x22)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x20</td><td>AUDIO_INIT</td><td>—</td><td>Reset the software audio mixer.</td></tr>
+      <tr><td>0x21</td><td>AUDIO_PLAY</td><td>R0=sampleId, R1=channel, R2=volume</td><td>Play a sample on the given channel (0–7). Volume 0–255.</td></tr>
+      <tr><td>0x22</td><td>AUDIO_STOP</td><td>R0=channel</td><td>Stop playback on the given channel.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="trap-input">Input Traps (0x30 – 0x32)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Returns</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x30</td><td>INPUT_POLL</td><td>—</td><td>—</td><td>Refresh the input state buffer in RAM at <code class="inline">0x00010000</code>.</td></tr>
+      <tr><td>0x31</td><td>INPUT_KEY</td><td>R0=keycode</td><td>R0=0/1</td><td>Query a single key (0–255). Returns 1 if pressed, else 0.</td></tr>
+      <tr><td>0x32</td><td>INPUT_GAMEPAD</td><td>R0=player</td><td>R0=buttons, R1=LX, R2=LY</td><td>Read gamepad state for player 0 or 1. Buttons are a 32-bit bitmask.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Input State Layout (RAM 0x00010000)</h4>
+<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code><span class="tok-k">struct</span> <span class="tok-f">InputState</span> {
+    <span class="tok-k">uint32_t</span> keyboard_keys[<span class="tok-n">8</span>];      <span class="tok-c">// 256 key bits</span>
+    <span class="tok-k">uint32_t</span> gamepad_buttons[<span class="tok-n">2</span>];  <span class="tok-c">// 2 players</span>
+    <span class="tok-k">int16_t</span>  gamepad_axis[<span class="tok-n">2</span>][<span class="tok-n">4</span>];  <span class="tok-c">// LX, LY, RX, RY</span>
+    <span class="tok-k">uint32_t</span> mouse_x;
+    <span class="tok-k">uint32_t</span> mouse_y;
+    <span class="tok-k">uint32_t</span> mouse_buttons;
+};
+</code></pre>
+
+  <h3 id="trap-mem">Memory Traps (0x40 – 0x41)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x40</td><td>MEM_COPY</td><td>R0=src, R1=dst, R2=len</td><td>Copy <code class="inline">len</code> bytes from <code class="inline">src</code> to <code class="inline">dst</code> within RAM. Uses memmove semantics (overlaps safe).</td></tr>
+      <tr><td>0x41</td><td>MEM_FILL</td><td>R0=dst, R1=value, R2=len</td><td>Fill <code class="inline">len</code> bytes starting at <code class="inline">dst</code> with <code class="inline">value &amp; 0xFF</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="trap-math">Math Traps (0x50 – 0x52)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Returns</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x50</td><td>MATH_RAND</td><td>R0=seed (optional)</td><td>R0=next</td><td>Linear congruential generator. If seed != 0, re-seeds the generator.</td></tr>
+      <tr><td>0x51</td><td>MATH_SIN</td><td>R0=angle</td><td>R0=fixed16.16</td><td>Sine of angle (0–65535 maps to 0–2π). Returns 16.16 fixed-point.</td></tr>
+      <tr><td>0x52</td><td>MATH_COS</td><td>R0=angle</td><td>R0=fixed16.16</td><td>Cosine of angle (0–65535 maps to 0–2π). Returns 16.16 fixed-point.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="trap-debug">Debug Traps (0x60 – 0x61)</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x60</td><td>DEBUG_LOG</td><td>R0=value</td><td>Print R0 as unsigned decimal to the debug console / serial.</td></tr>
+      <tr><td>0x61</td><td>DEBUG_LOG_STR</td><td>R0=addr</td><td>Print a null-terminated string from RAM to the debug console.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Core Traps</h3>
+  <table class="trap-table">
+    <thead><tr><th>Vector</th><th>Name</th><th>Args</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0x00</td><td>HALT</td><td>—</td><td>Stop the VM. The program ends. Handled internally by the VM.</td></tr>
+      <tr><td>0x01</td><td>SLEEP</td><td>R0=milliseconds</td><td>Delay execution for the given number of milliseconds.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Trap Usage Example</h3>
+<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code><span class="tok-c">; Clear screen to black and draw a sprite</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r0</span>, #<span class="tok-n">0xFF000000</span>       <span class="tok-c">; black (ARGB)</span>
+    <span class="tok-k">trap</span>    <span class="tok-n">0x12</span>               <span class="tok-c">; GFX_CLEAR</span>
+
+    <span class="tok-k">load</span>    <span class="tok-r">r0</span>, #<span class="tok-n">0</span>              <span class="tok-c">; sprite ID</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r1</span>, #<span class="tok-n">100</span>            <span class="tok-c">; x</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r2</span>, #<span class="tok-n">200</span>            <span class="tok-c">; y</span>
+    <span class="tok-k">load</span>    <span class="tok-r">r3</span>, #<span class="tok-n">1</span>              <span class="tok-c">; Alpha blend mode</span>
+    <span class="tok-k">trap</span>    <span class="tok-n">0x13</span>               <span class="tok-c">; GFX_DRAW_SPRITE</span>
+
+    <span class="tok-k">trap</span>    <span class="tok-n">0x11</span>               <span class="tok-c">; GFX_PRESENT</span>
+</code></pre>
+</section>
+
+<!-- ========================= MEMORY & REGISTERS ========================= -->
+<section class="section anchor" id="memory">
+  <h2><span class="icon">MEM</span> Memory Map &amp; Registers</h2>
+
+  <h3>Memory Layout</h3>
+  <table>
+    <thead><tr><th>Region</th><th>Start</th><th>End</th><th>Size</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>RAM</td><td><code class="inline">0x00000000</code></td><td><code class="inline">0x00FFFFFF</code></td><td>16 MB</td><td>General-purpose memory, stack, variables, heap.</td></tr>
+      <tr><td>VRAM</td><td><code class="inline">0x01000000</code></td><td><code class="inline">0x017FFFFF</code></td><td>8 MB</td><td>Video memory: framebuffers, sprite sheets, tile data.</td></tr>
+      <tr><td>ROM</td><td><code class="inline">0x02000000</code></td><td><code class="inline">0x03FFFFFF</code></td><td>32 MB</td><td>Cartridge ROM mapped for read-only access via <code class="inline">ld</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="registers">Register File</h3>
+  <p>The VM exposes 16 general-purpose 32-bit registers (R0–R15). Several registers have dedicated roles in the ABI:</p>
+  <table>
+    <thead><tr><th>Register</th><th>Name</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>R0 – R12</td><td>—</td><td>General purpose. Arguments and return values start in R0.</td></tr>
+      <tr><td>R13</td><td>SP</td><td>Stack pointer. Initialized to <code class="inline">0x000FFFFC</code> on reset.</td></tr>
+      <tr><td>R14</td><td>LR</td><td>Link register. Holds return address for <code class="inline">call</code>.</td></tr>
+      <tr><td>R15</td><td>PC</td><td>Program counter. Reads as <code class="inline">current + 4</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="limits">Hardware Limits</h3>
+  <div class="grid-2">
+    <div class="tile"><h4>Memory</h4><p>16 MB RAM, 8 MB VRAM, 32 MB ROM maximum.</p></div>
+    <div class="tile"><h4>Display</h4><p>640×480 default framebuffer. Up to 1920×1080 supported.</p></div>
+    <div class="tile"><h4>Sprites</h4><p>256 max sprites. Max size 256×256 per sprite.</p></div>
+    <div class="tile"><h4>Tiles</h4><p>1024 max tiles. 16 tilesets. 16 palettes × 256 colors.</p></div>
+    <div class="tile"><h4>Audio</h4><p>8 PCM channels, 16-bit stereo, 44100 Hz.</p></div>
+    <div class="tile"><h4>Performance</h4><p>~1 million VM cycles per frame at 60 FPS.</p></div>
+  </div>
+</section>
+
+<!-- ========================= C++ API ========================= -->
+<section class="section anchor" id="cpp-api">
+  <h2><span class="icon">CPP</span> C++ SDK Reference</h2>
+  <p class="lead">
+    The C++ runtime abstracts the virtual hardware through a thin header-only layer.
+    You write game logic against these headers; the IDE generates asset IDs and GameObject registries automatically.
+  </p>
+
+  <h3>Engine Lifecycle</h3>
+<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code><span class="tok-k">#include</span> <span class="tok-s">&lt;fantasy_engine.h&gt;</span>
+
+<span class="tok-k">int</span> <span class="tok-f">main</span>() {
+    fe::Engine_Init();               <span class="tok-c">// Set up subsystems</span>
+    fe::Engine_LoadScene(MAP_FOREST_01);
+
+    <span class="tok-k">while</span> (<span class="tok-k">true</span>) {
+        fe::Engine_PollInput();      <span class="tok-c">// Update input state</span>
+        fe::Engine_Update();         <span class="tok-c">// Run all GO_Update callbacks</span>
+        fe::Engine_Draw();           <span class="tok-c">// Draw tilemaps + GO_Draw callbacks</span>
+    }
+    <span class="tok-k">return</span> <span class="tok-n">0</span>;
+}
+</code></pre>
+
+  <h3 id="cpp-gfx">Graphics API</h3>
+  <table class="api-table">
+    <thead><tr><th>Function</th><th>Parameters</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">fe::Engine_Init()</code></td><td>—</td><td>Initialize the engine and all subsystems.</td></tr>
+      <tr><td><code class="inline">fe::Engine_LoadScene(id)</code></td><td><code class="inline">uint32_t mapId</code></td><td>Switch to a new scene and reset object list.</td></tr>
+      <tr><td><code class="inline">fe::Engine_PollInput()</code></td><td>—</td><td>Read hardware input and write to RAM input state.</td></tr>
+      <tr><td><code class="inline">fe::Engine_Update()</code></td><td>—</td><td>Call all registered GameObject <code class="inline">Update</code> callbacks.</td></tr>
+      <tr><td><code class="inline">fe::Engine_Draw()</code></td><td>—</td><td>Render tilemaps and call all <code class="inline">Draw</code> callbacks.</td></tr>
+      <tr><td><code class="inline">fe::Engine_PlaySFX(id, ch)</code></td><td><code class="inline">uint32_t sampleId, uint8_t channel</code></td><td>Play a sound effect on the given channel.</td></tr>
+      <tr><td><code class="inline">fe::Gfx_Clear(color)</code></td><td><code class="inline">uint32_t argb</code></td><td>Clear the back buffer.</td></tr>
+      <tr><td><code class="inline">fe::Gfx_Present()</code></td><td>—</td><td>Flip buffers and wait for vsync.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="cpp-sprite">Sprite &amp; Tilemap API</h3>
+  <table class="api-table">
+    <thead><tr><th>Function</th><th>Parameters</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">fe::Sprite_Draw(id, x, y, flip)</code></td><td><code class="inline">uint32_t id, int x, int y, uint8_t flip</code></td><td>Draw a sprite with optional horizontal/vertical flip.</td></tr>
+      <tr><td><code class="inline">fe::Sprite_DrawEx(id, x, y, mode, alpha)</code></td><td>+ <code class="inline">BlendMode mode, uint8_t alpha</code></td><td>Draw with blend mode and global alpha override.</td></tr>
+      <tr><td><code class="inline">fe::Tilemap_DrawLayer(id, scrollX, scrollY)</code></td><td><code class="inline">uint32_t layerId, int sx, int sy</code></td><td>Render a tilemap layer with pixel scrolling.</td></tr>
+      <tr><td><code class="inline">fe::Palette_SetColor(pal, idx, color)</code></td><td><code class="inline">uint8_t pal, uint8_t idx, uint32_t argb</code></td><td>Update a single palette entry at runtime.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="cpp-input">Input API</h3>
+  <table class="api-table">
+    <thead><tr><th>Function</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">fe::Input_IsPressed(btn)</code></td><td><code class="inline">uint32_t button</code></td><td><code class="inline">bool</code></td><td>True if button was pressed this frame (edge).</td></tr>
+      <tr><td><code class="inline">fe::Input_IsHeld(btn)</code></td><td><code class="inline">uint32_t button</code></td><td><code class="inline">bool</code></td><td>True if button is currently held down.</td></tr>
+      <tr><td><code class="inline">fe::Input_IsReleased(btn)</code></td><td><code class="inline">uint32_t button</code></td><td><code class="inline">bool</code></td><td>True if button was released this frame (edge).</td></tr>
+      <tr><td><code class="inline">fe::Input_GamepadAxis(player, axis)</code></td><td><code class="inline">uint8_t p, uint8_t a</code></td><td><code class="inline">int16_t</code></td><td>Read analog axis value (LX=0, LY=1, RX=2, RY=3).</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Button Constants</h4>
+  <div class="grid-3">
+    <div class="tile"><h4>BUTTON_UP</h4><p>D-pad up</p></div>
+    <div class="tile"><h4>BUTTON_DOWN</h4><p>D-pad down</p></div>
+    <div class="tile"><h4>BUTTON_LEFT</h4><p>D-pad left</p></div>
+    <div class="tile"><h4>BUTTON_RIGHT</h4><p>D-pad right</p></div>
+    <div class="tile"><h4>BUTTON_A</h4><p>Primary action</p></div>
+    <div class="tile"><h4>BUTTON_B</h4><p>Secondary action</p></div>
+    <div class="tile"><h4>BUTTON_START</h4><p>Pause / menu</p></div>
+    <div class="tile"><h4>BUTTON_SELECT</h4><p>Select / back</p></div>
+  </div>
+
+  <h3 id="cpp-audio">Audio API</h3>
+  <table class="api-table">
+    <thead><tr><th>Function</th><th>Parameters</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">fe::Audio_Init()</code></td><td>—</td><td>Reset the mixer and clear all channels.</td></tr>
+      <tr><td><code class="inline">fe::Audio_Play(sample, ch, vol)</code></td><td><code class="inline">uint32_t id, uint8_t ch, uint8_t vol</code></td><td>Start playback. Volume 0–255.</td></tr>
+      <tr><td><code class="inline">fe::Audio_Stop(ch)</code></td><td><code class="inline">uint8_t ch</code></td><td>Stop a channel immediately.</td></tr>
+      <tr><td><code class="inline">fe::Audio_SetVolume(ch, vol)</code></td><td><code class="inline">uint8_t ch, uint8_t vol</code></td><td>Change volume of an active channel.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="cpp-go">GameObject API</h3>
+  <p>GameObjects are the primary gameplay entities. The IDE generates type IDs and a registration table from the GameObject Editor. You only implement the callback functions.</p>
+
+  <table class="api-table">
+    <thead><tr><th>Type / Function</th><th>Signature</th><th>Called</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">GameObject</code></td><td><code class="inline">struct { uint16_t type_id; uint16_t instance_id; Vec2 pos; Vec2 vel; Rect collider; uint32_t sprite_id; uint32_t anim_id; uint32_t state; uint32_t flags; void* user_data; }</code></td><td>Entity instance structure.</td></tr>
+      <tr><td><code class="inline">GO_InitFunc</code></td><td><code class="inline">void (*)(GameObject* self)</code></td><td>Once when the object is spawned.</td></tr>
+      <tr><td><code class="inline">GO_UpdateFunc</code></td><td><code class="inline">void (*)(GameObject* self)</code></td><td>Every frame before drawing.</td></tr>
+      <tr><td><code class="inline">GO_DrawFunc</code></td><td><code class="inline">void (*)(GameObject* self)</code></td><td>Every frame after tilemap render.</td></tr>
+      <tr><td><code class="inline">GO_CollisionFunc</code></td><td><code class="inline">void (*)(GameObject* self, GameObject* other)</code></td><td>When two colliders intersect.</td></tr>
+      <tr><td><code class="inline">GO_InteractFunc</code></td><td><code class="inline">void (*)(GameObject* self, GameObject* other)</code></td><td>On player-trigger interaction.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>GameObject Registration Macro</h4>
+<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code><span class="tok-c">// In a .cpp file — the IDE generates the registry automatically</span>
+<span class="tok-k">#include</span> <span class="tok-s">"generated/gameobject_types.h"</span>
+
+<span class="tok-k">struct</span> <span class="tok-f">EnemyData</span> { <span class="tok-k">int</span> hp; <span class="tok-k">int</span> patrolDir; };
+
+<span class="tok-k">void</span> <span class="tok-f">EnemySlime_Init</span>(GameObject* self) {
+    <span class="tok-k">auto</span>* d = <span class="tok-k">static_cast</span>&lt;EnemyData*&gt;(self-&gt;user_data);
+    d-&gt;hp = <span class="tok-n">3</span>;
+    d-&gt;patrolDir = <span class="tok-n">1</span>;
+    self-&gt;sprite_id = ASSET_SPR_ENEMY_SLIME;
+    self-&gt;collider = { <span class="tok-n">0</span>, <span class="tok-n">0</span>, <span class="tok-n">16</span>, <span class="tok-n">16</span> };
+}
+
+<span class="tok-k">void</span> <span class="tok-f">EnemySlime_Update</span>(GameObject* self) {
+    <span class="tok-k">auto</span>* d = <span class="tok-k">static_cast</span>&lt;EnemyData*&gt;(self-&gt;user_data);
+    self-&gt;pos.x += d-&gt;patrolDir;
+    <span class="tok-k">if</span> (self-&gt;pos.x &gt; <span class="tok-n">200</span> || self-&gt;pos.x &lt; <span class="tok-n">50</span>)
+        d-&gt;patrolDir = -d-&gt;patrolDir;
+}
+
+<span class="tok-k">void</span> <span class="tok-f">EnemySlime_OnCollision</span>(GameObject* self, GameObject* other) {
+    <span class="tok-k">if</span> (other-&gt;type_id == GOID_PLAYER) {
+        fe::Engine_PlaySFX(ASSET_SFX_HIT, <span class="tok-n">0</span>);
+    }
+}
+</code></pre>
+
+  <h3 id="cpp-math">Math &amp; Utility</h3>
+  <table class="api-table">
+    <thead><tr><th>Function</th><th>Parameters</th><th>Returns</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">fe::fp_mul(a, b)</code></td><td><code class="inline">int32_t a, int32_t b</code></td><td><code class="inline">int32_t</code></td><td>16.16 fixed-point multiply. Result is 16.16.</td></tr>
+      <tr><td><code class="inline">fe::fp_div(a, b)</code></td><td><code class="inline">int32_t a, int32_t b</code></td><td><code class="inline">int32_t</code></td><td>16.16 fixed-point divide. Result is 16.16.</td></tr>
+      <tr><td><code class="inline">fe::fp_from_int(i)</code></td><td><code class="inline">int32_t i</code></td><td><code class="inline">int32_t</code></td><td>Convert integer to 16.16 fixed-point.</td></tr>
+      <tr><td><code class="inline">fe::fp_to_int(f)</code></td><td><code class="inline">int32_t f</code></td><td><code class="inline">int32_t</code></td><td>Convert 16.16 fixed-point to integer (truncates).</td></tr>
+      <tr><td><code class="inline">fe::Math_Rand(seed)</code></td><td><code class="inline">uint32_t seed</code></td><td><code class="inline">uint32_t</code></td><td>Pseudo-random number. Seed 0 returns next value.</td></tr>
+      <tr><td><code class="inline">fe::Math_Sin(angle)</code></td><td><code class="inline">uint32_t angle</code></td><td><code class="inline">int32_t</code></td><td>Sine in 16.16 fixed-point. Angle 0–65535 = 0–2π.</td></tr>
+      <tr><td><code class="inline">fe::Math_Cos(angle)</code></td><td><code class="inline">uint32_t angle</code></td><td><code class="inline">int32_t</code></td><td>Cosine in 16.16 fixed-point.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info purple">
+    <strong>Fixed-Point Format</strong> — 16.16 means 16 integer bits (including sign) and 16 fractional bits.
+    The value <code class="inline">1.0</code> is represented as <code class="inline">0x00010000</code>.
+    Use <code class="inline">fe::fp_mul</code> and <code class="inline">fe::fp_div</code> instead of raw <code class="inline">*</code> and <code class="inline">/</code> to keep the scale correct.
+  </div>
+
+  <h3>Complete Project Structure</h3>
+  <div class="file-tree">
+<span class="dir">my_game/</span><br>
+<span class="dir">  src/</span><br>
+<span class="file">    main.cpp</span>          <span class="comment">// Engine_Init + main loop</span><br>
+<span class="file">    player.cpp</span>        <span class="comment">// GOID_PLAYER callbacks</span><br>
+<span class="file">    enemy.cpp</span>         <span class="comment">// GOID_ENEMY callbacks</span><br>
+<span class="dir">  generated/</span>         <span class="comment">// Auto-generated by IDE</span><br>
+<span class="file">    asset_ids.h</span>       <span class="comment">// #define ASSET_SPR_PLAYER 0</span><br>
+<span class="file">    gameobject_types.h</span> <span class="comment">// #define GOID_PLAYER 0</span><br>
+<span class="file">    gameobject_registry.cpp</span> <span class="comment">// Type table</span><br>
+<span class="file">    map_forest_01_data.cpp</span> <span class="comment">// Static tile arrays</span><br>
+<span class="file">    engine_config.h</span>   <span class="comment">// Hardware limits as #defines</span><br>
+<span class="dir">  assets/</span><br>
+<span class="file">    sprites/player.png</span><br>
+<span class="file">    tilesets/ground.png</span><br>
+<span class="file">    maps/forest_01.json</span><br>
+<span class="file">  game.fproj</span>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<footer>
+  Fantasy Pi Console — Complete ISA, Trap, and SDK Reference
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+  const sections = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-links a, .sidebar a');
+  function onScroll() {
+    let current = '';
+    sections.forEach(sec => { const top = sec.offsetTop - 100; if (scrollY >= top) current = sec.getAttribute('id'); });
+    navItems.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+  }
+  window.addEventListener('scroll', onScroll); onScroll();
+
+  function copyCode(btn) {
+    const code = btn.parentElement.querySelector('code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      const old = btn.textContent; btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = old, 1500);
+    });
+  }
+</script>
+</body>
+</html>
