@@ -1,10 +1,10 @@
-# MINERVA - Bare-Metal Fantasy Console for Raspberry Pi 4/5
+# Fantasy Pi - Bare-Metal Fantasy Console for Raspberry Pi 4/5
 
 ## Overview
 
-MINERVA is a bare-metal fantasy console running directly on Raspberry Pi 4 and 5 hardware without Linux. It consists of:
+Fantasy Pi is a bare-metal fantasy console running directly on Raspberry Pi 4 and 5 hardware without Linux. It consists of:
 
-- A custom Fantasy VM with its own instruction set architecture (AEGIS)
+- A custom Fantasy VM with its own instruction set architecture
 - A software renderer with BitBlt, alpha blending, sprite compositing, and tilemap support
 - A macroassembler with asset embedding directives
 - An asset compiler converting PNG/WAV/etc. to console-native formats

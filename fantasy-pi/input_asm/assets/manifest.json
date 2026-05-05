@@ -1,0 +1,44 @@
+{
+    "assets": [
+        {
+            "name": "bg_main",
+            "source": "assets/background.png",
+            "type": "image",
+            "format": "rgb565",
+            "alpha": "none"
+        },
+        {
+            "name": "player",
+            "source": "assets/player.png",
+            "type": "sprite",
+            "format": "rgba8888",
+            "alpha": "premultiplied"
+        },
+        {
+            "name": "shadow",
+            "source": "assets/shadow.png",
+            "type": "sprite",
+            "format": "rgba4444",
+            "alpha": "premultiplied"
+        },
+        {
+            "name": "sfx_jump",
+            "source": "assets/jump.wav",
+            "type": "audio",
+            "format": "pcm16"
+        },
+        {
+            "name": "tiles_ground",
+            "source": "assets/tiles.png",
+            "type": "tileset",
+            "format": "rgba8888",
+            "tilew": 16,
+            "tileh": 16
+        },
+        {
+            "name": "map_level1",
+            "source": "assets/level1.json",
+            "type": "tilemap"
+        }
+    ]
+}

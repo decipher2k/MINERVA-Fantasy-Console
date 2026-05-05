@@ -7,11 +7,11 @@
 
 RASPPI ?= 5
 PREFIX ?= aarch64-none-elf-
-PYTHON ?= python
-TOOLCHAIN_DIR ?= C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-aarch64-none-elf/bin
+PYTHON ?= $(PROJECT_ROOT)/tools/python/python.exe
+TOOLCHAIN_DIR ?= $(PROJECT_ROOT)/toolchain/aarch64-none-elf/bin
 
 PROJECT_ROOT := ../..
-CIRCLE_HOME ?= $(PROJECT_ROOT)/../circle
+CIRCLE_HOME ?= $(PROJECT_ROOT)/circle
 
 NEEDS_CIRCLE := $(if $(MAKECMDGOALS),$(filter all kernel8.img kernel.elf,$(MAKECMDGOALS)),yes)
 ifneq ($(NEEDS_CIRCLE),)
@@ -80,10 +80,10 @@ CIRCLE_LIBS := $(CIRCLE_HOME)/addon/linux/liblinuxemu.a \
                $(CIRCLE_HOME)/lib/fs/libfs.a \
                $(CIRCLE_HOME)/lib/libcircle.a
 
-GAME_SRC := $(PROJECT_ROOT)/games/test_game/src/main.fasm
-ASSET_DEPS := $(wildcard $(PROJECT_ROOT)/games/test_game/assets/*.png) \
-              $(wildcard $(PROJECT_ROOT)/games/test_game/assets/*.wav) \
-              $(wildcard $(PROJECT_ROOT)/games/test_game/assets/*.json)
+GAME_SRC := $(PROJECT_ROOT)/input_asm/src/main.fasm
+ASSET_DEPS := $(wildcard $(PROJECT_ROOT)/input_asm/assets/*.png) \
+              $(wildcard $(PROJECT_ROOT)/input_asm/assets/*.wav) \
+              $(wildcard $(PROJECT_ROOT)/input_asm/assets/*.json)
 
 all: kernel8.img
 
@@ -97,8 +97,8 @@ kernel.elf: $(OBJS) cartridge.o $(LDSCRIPT) $(CIRCLE_LIBS)
 
 cartridge.bin: $(GAME_SRC) $(ASSET_DEPS)
 	$(PYTHON) $(PROJECT_ROOT)/macroassembler/src/mfasm.py $(GAME_SRC) -o $@ \
-		-I $(PROJECT_ROOT)/games/test_game/src \
-		-I $(PROJECT_ROOT)/games/test_game/assets
+		-I $(PROJECT_ROOT)/input_asm/src \
+		-I $(PROJECT_ROOT)/input_asm/assets
 
 cartridge.o: cartridge.bin
 	$(OBJCOPY) -I binary -O elf64-littleaarch64 -B aarch64 \
