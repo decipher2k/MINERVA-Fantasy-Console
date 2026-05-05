@@ -18,6 +18,7 @@ Copy the source files and the assets to fantasy-pi\input_asm\ <br>
 cd fantasy-pi<br>
 .\build.bat<br>
 <br>
+copy the kernel file fantasy-pi\kernel8.img to the boot partition of your Raspberry Pi 5 sdcard.<br><br>
 ## Tool Links
 
 Use official package managers where possible. These links are stable entry points rather than version-pinned download files.
