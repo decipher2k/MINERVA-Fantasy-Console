@@ -1,0 +1,286 @@
+{
+    "Name": "test_game",
+    "FilePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\test_game.fproj",
+    "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+    "TargetConsole": {
+        "Name": "Fantasy Pi",
+        "RamSize": 16777216,
+        "VramSize": 8388608,
+        "RomMaxSize": 33554432,
+        "MaxSprites": 256,
+        "MaxSpriteWidth": 256,
+        "MaxSpriteHeight": 256,
+        "MaxTiles": 1024,
+        "MaxColorsPerPalette": 256,
+        "MaxMapWidth": 512,
+        "MaxMapHeight": 512,
+        "MaxGameObjectsPerMap": 256,
+        "MaxAnimations": 256,
+        "AudioChannels": 8,
+        "MaxTilesets": 16,
+        "MaxPaletteCount": 16,
+        "FramebufferWidth": 640,
+        "FramebufferHeight": 480,
+        "MaxSounds": 256,
+        "MaxMusicTracks": 32
+    },
+    "Files": [
+        {
+            "RelativePath": "src\\main.cpp",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\src\\main.cpp",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 0,
+            "IsGenerated": false,
+            "AssetId": null
+        },
+        {
+            "RelativePath": "generated\\asset_ids.h",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\generated\\asset_ids.h",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 1,
+            "IsGenerated": true,
+            "AssetId": null
+        },
+        {
+            "RelativePath": "assets\\manifest.json",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\manifest.json",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 3,
+            "IsGenerated": false,
+            "AssetId": null
+        },
+        {
+            "RelativePath": "assets\\background.png",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\background.png",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 2,
+            "IsGenerated": false,
+            "AssetId": "bg_main"
+        },
+        {
+            "RelativePath": "assets\\player.png",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\player.png",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 5,
+            "IsGenerated": false,
+            "AssetId": "player"
+        },
+        {
+            "RelativePath": "assets\\shadow.png",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\shadow.png",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 5,
+            "IsGenerated": false,
+            "AssetId": "shadow"
+        },
+        {
+            "RelativePath": "assets\\jump.wav",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\jump.wav",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 8,
+            "IsGenerated": false,
+            "AssetId": "sfx_jump"
+        },
+        {
+            "RelativePath": "assets\\tiles.png",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\tiles.png",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 6,
+            "IsGenerated": false,
+            "AssetId": "tiles_ground"
+        },
+        {
+            "RelativePath": "assets\\level1.json",
+            "AbsolutePath": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game\\assets\\level1.json",
+            "RootDirectory": "C:\\Users\\denni\\console\\fantasy-pi\\games\\test_game",
+            "FileType": 4,
+            "IsGenerated": false,
+            "AssetId": "map_level1"
+        }
+    ],
+    "BuildConfigurations": [
+        {
+            "Name": "Debug",
+            "CompilerPath": "fantasy-pi-g++",
+            "AssemblerPath": "",
+            "LinkerPath": "",
+            "CFlags": "-O0 -g -Wall -std=c++17",
+            "AsmFlags": "",
+            "LdFlags": "",
+            "LinkerScript": "",
+            "IncludePaths": [
+                
+            ],
+            "LibraryPaths": [
+                
+            ],
+            "Libraries": [
+                
+            ],
+            "PreBuildCommand": null,
+            "PostBuildCommand": null,
+            "OutputRomPath": "build\\game.rom",
+            "OutputFasmPath": "build\\game.fasm",
+            "OutputKernelImagePath": "build\\kernel8.img",
+            "BuildKernelImage": true,
+            "ProjectRoot": null,
+            "OptimizeSize": false,
+            "DebugSymbols": true
+        },
+        {
+            "Name": "Release",
+            "CompilerPath": "fantasy-pi-g++",
+            "AssemblerPath": "",
+            "LinkerPath": "",
+            "CFlags": "-O2 -Wall -std=c++17",
+            "AsmFlags": "",
+            "LdFlags": "",
+            "LinkerScript": "",
+            "IncludePaths": [
+                
+            ],
+            "LibraryPaths": [
+                
+            ],
+            "Libraries": [
+                
+            ],
+            "PreBuildCommand": null,
+            "PostBuildCommand": null,
+            "OutputRomPath": "build\\game.rom",
+            "OutputFasmPath": "build\\game.fasm",
+            "OutputKernelImagePath": "build\\kernel8.img",
+            "BuildKernelImage": true,
+            "ProjectRoot": null,
+            "OptimizeSize": false,
+            "DebugSymbols": false
+        }
+    ],
+    "Assets": [
+        {
+            "Id": "bg_main",
+            "Name": "Background",
+            "Type": 6,
+            "SourcePath": "assets\\background.png",
+            "OutputPath": "build\\assets\\background.bin",
+            "Width": 640,
+            "Height": 480,
+            "Format": "rgb565",
+            "IsPremultiplied": false,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                "type": "image",
+                "alpha": "none"
+            }
+        },
+        {
+            "Id": "player",
+            "Name": "Player",
+            "Type": 0,
+            "SourcePath": "assets\\player.png",
+            "OutputPath": "build\\assets\\player.bin",
+            "Width": 32,
+            "Height": 32,
+            "Format": "rgba8888",
+            "IsPremultiplied": true,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                "alpha": "premultiplied"
+            }
+        },
+        {
+            "Id": "shadow",
+            "Name": "Shadow",
+            "Type": 0,
+            "SourcePath": "assets\\shadow.png",
+            "OutputPath": "build\\assets\\shadow.bin",
+            "Width": 16,
+            "Height": 16,
+            "Format": "rgba4444",
+            "IsPremultiplied": true,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                "alpha": "premultiplied"
+            }
+        },
+        {
+            "Id": "sfx_jump",
+            "Name": "Jump",
+            "Type": 3,
+            "SourcePath": "assets\\jump.wav",
+            "OutputPath": "build\\assets\\jump.bin",
+            "Width": 0,
+            "Height": 0,
+            "Format": "pcm16",
+            "IsPremultiplied": false,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                
+            }
+        },
+        {
+            "Id": "tiles_ground",
+            "Name": "Ground Tiles",
+            "Type": 1,
+            "SourcePath": "assets\\tiles.png",
+            "OutputPath": "build\\assets\\tiles.bin",
+            "Width": 32,
+            "Height": 32,
+            "Format": "rgba8888",
+            "IsPremultiplied": false,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                "tilew": "16",
+                "tileh": "16"
+            }
+        },
+        {
+            "Id": "map_level1",
+            "Name": "Level 1",
+            "Type": 2,
+            "SourcePath": "assets\\level1.json",
+            "OutputPath": "build\\assets\\level1.bin",
+            "Width": 40,
+            "Height": 30,
+            "Format": "tilemap",
+            "IsPremultiplied": false,
+            "PaletteId": 0,
+            "GeneratedHeaderName": "generated\\asset_ids.h",
+            "Metadata": {
+                "tile_width": "16",
+                "tile_height": "16"
+            }
+        }
+    ],
+    "GameObjectTypes": [
+        
+    ],
+    "Maps": [
+        
+    ],
+    "AiConfig": {
+        "ApiBaseUrl": "https://api.openai.com/v1",
+        "ApiKey": null,
+        "Model": "gpt-4",
+        "Temperature": 0.3,
+        "MaxTokens": 4096,
+        "SystemPrompt": "Du bist ein erfahrener C++-Entwickler fuer die Fantasy Pi Konsole.",
+        "StreamResponse": true,
+        "ProxyUrl": null,
+        "UseProjectContext": true,
+        "MaxContextFiles": 10
+    },
+    "EmulatorConfig": {
+        "EmulatorPath": "fantasy-pi-emulator.exe",
+        "RomPath": "build/game.rom",
+        "DebugPort": 9999,
+        "StartWithDebugger": false,
+        "AutoRunOnBuild": false
+    },
+    "ActiveBuildConfiguration": "Debug"
+}
