@@ -19,6 +19,73 @@ cd fantasy-pi<br>
 .\build.bat<br>
 <br>
 copy the kernel file fantasy-pi\kernel8.img to the boot partition of your Raspberry Pi 5 sdcard.<br><br>
+
+## Architecture
+
+```
++------------------------------------------+
+|            Bare-Metal Kernel             |
+|         (Circle + ARM64 Startup)         |
++------------------------------------------+
+|  Fantasy VM  |  Renderer  |  Audio/Input |
++------------------------------------------+
+|         ROM / Cartridge Image            |
+|  (Game Code + Assets + Metadata)         |
++------------------------------------------+
+```
+
+## Quick Start
+
+See `docs/build/BUILD.md` for setup instructions.
+
+### Compile `.fproj` C/C++ Projects
+
+Fantasy Pi Studio projects (`.fproj`) use the C/C++ ROM build path. Open the
+`.fproj` in Fantasy Pi Studio, select the desired build configuration
+(`Debug`, `Release`, or `SizeOptimized`), then run **Build**. The Studio build
+service reads the active `BuildConfigurations` entry from the project file,
+generates the project-local files in `generated/`, and invokes
+`tools/fpgcc/fpgcc.py`.
+
+The build pipeline is:
+
+```text
+.fproj + src/*.cpp + generated/*.cpp + assets/manifest.json
+  -> tools/fpgcc/fpgcc.py
+  -> build/game.fasm
+  -> macroassembler/mfasm.py
+  -> build/game.rom
+```
+
+If `BuildKernelImage` is enabled in the selected build configuration, Studio
+also embeds the ROM into the Raspberry Pi kernel build and writes
+`build/kernel8.img`.
+
+The equivalent command shape for a C/C++ project is:
+
+```powershell
+cd C:\path\to\fantasy-pi
+python tools\fpgcc\fpgcc.py games\flappy_bird_cpp_demo\src games\flappy_bird_cpp_demo\generated\gameobject_scripts.cpp `
+  -I games\flappy_bird_cpp_demo\src `
+  -I games\flappy_bird_cpp_demo\generated `
+  -I sdk\include `
+  -o games\flappy_bird_cpp_demo\build\game.fasm `
+  --rom games\flappy_bird_cpp_demo\build\game.rom `
+  --runtime-fasm games\flappy_bird_cpp_demo\generated\gameobject_runtime.fasm `
+  --asset-manifest games\flappy_bird_cpp_demo\assets\manifest.json `
+  --gcc-flag=-O0 `
+  --gcc-flag=-g `
+  --gcc-flag=-Wall `
+  --gcc-flag=-std=c++17
+```
+
+`fpgcc.py` is the current Fantasy Pi C/C++ compiler driver. It uses host
+GCC/G++ for preprocessing and syntax checks, lowers the supported gameplay
+subset to Fantasy Assembly, and then calls the ROM assembler. It is not a full
+GCC backend for the Fantasy VM ISA. See `docs/build/BUILD.md` for the complete
+toolchain setup and platform-specific details.
+
+
 ## Tool Links
 
 Use official package managers where possible. These links are stable entry points rather than version-pinned download files.
